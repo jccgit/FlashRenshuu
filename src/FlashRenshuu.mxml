@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   creationComplete="initApp()">
+	<fx:Style source="FlashRenshuu.css"/>
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+
+			public var silbenArray:Array = new Array(
+				"a", "i", "u", "e", "o",			//0..4
+				"ka", "ki", "ku", "ke", "ko",		//5..9
+				"sa", "shi", "su", "se", "so",		//10..14
+				"ta", "chi", "tsu", "te", "to",		//15..19
+				"na", "ni", "nu", "ne", "no",		//20..24
+				"ha", "hi", "fu", "he", "ho",		//25..29
+				"ma", "mi", "mu", "me", "mo",		//30..34
+				"ya", "yu", "yo",					//35..37
+				"ra", "ri", "ru", "re", "ro",		//38..42
+				"wa", "wo",							//43..44
+				"n"									//45
+				);	
+			
+			public var antwortenArray: Array = new Array("","","","","");
+			public var zufallsZahl: int;
+			public var richtigeSilbe: String = "a";
+			public var alteRichtigeSilbe: String = "a";
+			public var anzahlRichtig: int = 0;
+			public var anzahlFalsch: int = 0;
+			[Bindable] public var scoreString: String;
+			
+			private function initApp():void {
+				kanaRadio1.enabled = false;
+				kanaRadio2.enabled = false;
+				kanaRadio3.enabled = false;
+				kanaRadio4.enabled = false;
+				kanaRadio5.enabled = false;
+				
+				romajiAntwortRadio1.enabled = false;
+				romajiAntwortRadio2.enabled = false;
+				romajiAntwortRadio3.enabled = false;
+				romajiAntwortRadio4.enabled = false;
+				romajiAntwortRadio5.enabled = false;
+			}
+			
+			private function ladeKanaFrage(hiragana: Boolean, katakana: Boolean):void {
+				if(hiragana && katakana) {
+					do {
+						zufallsZahl = Math.round( Math.random() * 91 );
+						if(zufallsZahl > 45) {
+							zufallsZahl = zufallsZahl - 45;
+							alteRichtigeSilbe = richtigeSilbe;
+							richtigeSilbe = silbenArray[zufallsZahl];
+							kanaFrageImage.source="kana/katakana/" + richtigeSilbe + ".png";
+						}
+						else {
+							richtigeSilbe = silbenArray[zufallsZahl];
+							kanaFrageImage.source="kana/hiragana/" + richtigeSilbe + ".png";		
+						}	
+					}
+					while(richtigeSilbe == alteRichtigeSilbe);
+				}
+				else {
+					do {
+						zufallsZahl = Math.round( Math.random() * 45 );
+						alteRichtigeSilbe = richtigeSilbe;
+						richtigeSilbe = silbenArray[zufallsZahl];
+						if(hiragana) {
+							kanaFrageImage.source="kana/hiragana/" + richtigeSilbe + ".png";
+						}
+						else if(katakana) kanaFrageImage.source="kana/katakana/" + richtigeSilbe + ".png";	
+					}
+					while(richtigeSilbe == alteRichtigeSilbe);
+				}
+			}
+			
+			private function ladeRomajiAntworten():void {
+				var stelleRichtig: int;
+				var i: int;
+				stelleRichtig = Math.round( Math.random() * 4 );
+				antwortenArray[stelleRichtig] = richtigeSilbe;
+				for(i=0; i <=4; i++) {
+					if(i != stelleRichtig) {
+						do {
+							zufallsZahl = Math.round( Math.random() * 45 );
+							antwortenArray[i] = silbenArray[zufallsZahl];							
+						}
+							while(antwortenArray[i] == richtigeSilbe); 			//damit die richtige Antwort nicht 2 x auftaucht
+					}
+				}
+				
+				romajiAntwortRadio1.label = antwortenArray[0];	
+				romajiAntwortRadio2.label = antwortenArray[1];	
+				romajiAntwortRadio3.label = antwortenArray[2];	
+				romajiAntwortRadio4.label = antwortenArray[3];	
+				romajiAntwortRadio5.label = antwortenArray[4];	
+
+			}
+	
+			private function ladeRomajiFrage(hiragana: Boolean, katakana: Boolean):void {
+				if(hiragana && katakana) {
+					do {
+						zufallsZahl = Math.round( Math.random() * 91 );
+						if(zufallsZahl > 45) {
+							zufallsZahl = zufallsZahl - 45;
+							alteRichtigeSilbe = richtigeSilbe;
+							richtigeSilbe = silbenArray[zufallsZahl];
+							romajiFrageLabel.text = richtigeSilbe;
+						}
+						else {
+							richtigeSilbe = silbenArray[zufallsZahl];
+							romajiFrageLabel.text = richtigeSilbe;
+						}	
+					}
+					while(richtigeSilbe == alteRichtigeSilbe);
+				}
+				else {
+					do {
+						zufallsZahl = Math.round( Math.random() * 45 );
+						alteRichtigeSilbe = richtigeSilbe;
+						richtigeSilbe = silbenArray[zufallsZahl];
+						romajiFrageLabel.text = richtigeSilbe;	
+					}
+					while(richtigeSilbe == alteRichtigeSilbe);
+				}
+			}
+			
+			private function ladeKanaAntworten(hiragana: Boolean, katakana: Boolean):void {
+				var stelleRichtig: int;
+				var i: int;
+				stelleRichtig = Math.round( Math.random() * 4 );
+				antwortenArray[stelleRichtig] = richtigeSilbe;
+				for(i=0; i <=4; i++) {
+					if(i != stelleRichtig) {
+						do {
+							zufallsZahl = Math.round( Math.random() * 45 );
+							antwortenArray[i] = silbenArray[zufallsZahl];							
+						}
+						while(antwortenArray[i] == richtigeSilbe); 			//damit die richtige Antwort nicht 2 x auftaucht
+					}
+				}
+				
+				if(hiragana && katakana) {
+					if(Math.round( Math.random() * 100) % 2 == 0) { kanaImage1.source="kana/hiragana/" + antwortenArray[0] + ".png"; }
+					else kanaImage1.source="kana/katakana/" + antwortenArray[0] + ".png"; 
+					
+					if(Math.round( Math.random() * 100) % 2 == 0) { kanaImage2.source="kana/hiragana/" + antwortenArray[1] + ".png"; }
+					else kanaImage2.source="kana/katakana/" + antwortenArray[1] + ".png"; 
+					
+					if(Math.round( Math.random() * 100) % 2 == 0) { kanaImage3.source="kana/hiragana/" + antwortenArray[2] + ".png"; }
+					else kanaImage3.source="kana/katakana/" + antwortenArray[2] + ".png"; 
+					
+					if(Math.round( Math.random() * 100) % 2 == 0) { kanaImage4.source="kana/hiragana/" + antwortenArray[3] + ".png"; }
+					else kanaImage4.source="kana/katakana/" + antwortenArray[3] + ".png"; 
+					
+					if(Math.round( Math.random() * 100) % 2 == 0) { kanaImage5.source="kana/hiragana/" + antwortenArray[4] + ".png"; }
+					else kanaImage5.source="kana/katakana/" + antwortenArray[4] + ".png"; 					
+				}
+				else if(hiragana) {
+					kanaImage1.source="kana/hiragana/" + antwortenArray[0] + ".png";
+					kanaImage2.source="kana/hiragana/" + antwortenArray[1] + ".png";
+					kanaImage3.source="kana/hiragana/" + antwortenArray[2] + ".png";
+					kanaImage4.source="kana/hiragana/" + antwortenArray[3] + ".png";
+					kanaImage5.source="kana/hiragana/" + antwortenArray[4] + ".png";
+				}
+
+				else if(katakana) {
+					kanaImage1.source="kana/katakana/" + antwortenArray[0] + ".png";
+					kanaImage2.source="kana/katakana/" + antwortenArray[1] + ".png";
+					kanaImage3.source="kana/katakana/" + antwortenArray[2] + ".png";
+					kanaImage4.source="kana/katakana/" + antwortenArray[3] + ".png";
+					kanaImage5.source="kana/katakana/" + antwortenArray[4] + ".png";
+				}
+			}
+			
+			private function antwortFalsch():void {
+				if(renshuuStack.selectedChild == romajikana) {
+					smileyImage1.source = "kana/falsch.png";					
+				}
+				else { smileyImage2.source = "kana/falsch.png"; }
+				anzahlFalsch = anzahlFalsch + 1;
+				scoreString = Math.round(anzahlRichtig/(anzahlRichtig+anzahlFalsch) * 100) + "%"
+			}
+
+			private function antwortRichtig():void {
+				if(renshuuStack.selectedChild == romajikana) {
+					smileyImage1.source = "kana/richtig.png";					
+				}
+				else { smileyImage2.source = "kana/richtig.png"; }
+				anzahlRichtig = anzahlRichtig + 1;
+				scoreString = Math.round(anzahlRichtig/(anzahlRichtig+anzahlFalsch) * 100) + "%"
+			}
+
+			protected function kanaAbfrageStartButton_clickHandler(event:MouseEvent):void
+			{
+				if(kanaAbfrageStartButton.label == "Start") {
+					if(hiraganaCheck2.selected || katakanaCheck2.selected) {
+						kanaAbfrageStartButton.label = "Reset";
+						ladeKanaFrage(hiraganaCheck2.selected, katakanaCheck2.selected);
+						ladeRomajiAntworten();	
+						scoreString = "0%";
+						romajiAntwortRadio1.enabled = true;
+						romajiAntwortRadio2.enabled = true;
+						romajiAntwortRadio3.enabled = true;
+						romajiAntwortRadio4.enabled = true;
+						romajiAntwortRadio5.enabled = true;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");				
+				}
+				else if(kanaAbfrageStartButton.label == "Reset") {
+					kanaAbfrageStartButton.label = "Start";
+					anzahlRichtig = 0;
+					anzahlFalsch = 0;	
+					smileyImage1.source = "kana/neutral.png";
+					scoreString = "Score";
+					romajiAntwortRadio1.enabled = false;
+					romajiAntwortRadio2.enabled = false;
+					romajiAntwortRadio3.enabled = false;
+					romajiAntwortRadio4.enabled = false;
+					romajiAntwortRadio5.enabled = false;
+				}
+			}
+
+			protected function romajiAbfrageStartButton_clickHandler(event:MouseEvent):void
+			{
+				if(romajiAbfrageStartButton.label == "Start") {
+					if(hiraganaCheck1.selected || katakanaCheck1.selected) {
+						romajiAbfrageStartButton.label = "Reset";
+						ladeRomajiFrage(hiraganaCheck1.selected, katakanaCheck1.selected);
+						ladeKanaAntworten(hiraganaCheck1.selected, katakanaCheck1.selected);	
+						scoreString = "0%";
+						kanaRadio1.enabled = true;
+						kanaRadio2.enabled = true;
+						kanaRadio3.enabled = true;
+						kanaRadio4.enabled = true;
+						kanaRadio5.enabled = true;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else if(romajiAbfrageStartButton.label == "Reset") {
+					romajiAbfrageStartButton.label = "Start";
+					anzahlRichtig = 0;
+					anzahlFalsch = 0;	
+					smileyImage1.source = "kana/neutral.png";
+					scoreString = "Score";	
+					kanaRadio1.enabled = false;
+					kanaRadio2.enabled = false;
+					kanaRadio3.enabled = false;
+					kanaRadio4.enabled = false;
+					kanaRadio5.enabled = false;
+				}
+			}
+			
+			protected function kanaRadio1_clickHandler(event:MouseEvent):void
+			{
+				if((kanaImage1.source == "kana/katakana/" + romajiFrageLabel.text + ".png") ||
+					(kanaImage1.source == "kana/hiragana/" + romajiFrageLabel.text + ".png")) {
+					antwortRichtig();
+					if(hiraganaCheck1.selected || katakanaCheck1.selected) {
+						ladeRomajiFrage(hiraganaCheck1.selected, katakanaCheck1.selected);
+						ladeKanaAntworten(hiraganaCheck1.selected, katakanaCheck1.selected);	
+						kanaRadio1.selected = false;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else {
+					antwortFalsch();
+				}				
+			}
+			
+			protected function kanaRadio2_clickHandler(event:MouseEvent):void
+			{
+				if((kanaImage2.source == "kana/katakana/" + romajiFrageLabel.text + ".png") ||
+					(kanaImage2.source == "kana/hiragana/" + romajiFrageLabel.text + ".png")) {
+					antwortRichtig();
+					if(hiraganaCheck1.selected || katakanaCheck1.selected) {
+						ladeRomajiFrage(hiraganaCheck1.selected, katakanaCheck1.selected);
+						ladeKanaAntworten(hiraganaCheck1.selected, katakanaCheck1.selected);	
+						kanaRadio2.selected = false;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else {
+					antwortFalsch();
+				}
+			}
+			
+			protected function kanaRadio3_clickHandler(event:MouseEvent):void
+			{
+				if((kanaImage3.source == "kana/katakana/" + romajiFrageLabel.text + ".png") ||
+					(kanaImage3.source == "kana/hiragana/" + romajiFrageLabel.text + ".png")) {
+					antwortRichtig();
+					if(hiraganaCheck1.selected || katakanaCheck1.selected) {
+						ladeRomajiFrage(hiraganaCheck1.selected, katakanaCheck1.selected);
+						ladeKanaAntworten(hiraganaCheck1.selected, katakanaCheck1.selected);	
+						kanaRadio3.selected = false;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else {
+					antwortFalsch();
+				}
+			}
+			
+			protected function kanaRadio4_clickHandler(event:MouseEvent):void
+			{
+				if((kanaImage4.source == "kana/katakana/" + romajiFrageLabel.text + ".png") ||
+					(kanaImage4.source == "kana/hiragana/" + romajiFrageLabel.text + ".png")) {
+					antwortRichtig();
+					if(hiraganaCheck1.selected || katakanaCheck1.selected) {
+						ladeRomajiFrage(hiraganaCheck1.selected, katakanaCheck1.selected);
+						ladeKanaAntworten(hiraganaCheck1.selected, katakanaCheck1.selected);	
+						kanaRadio4.selected = false;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else {
+					antwortFalsch();
+				}
+			}
+			
+			protected function kanaRadio5_clickHandler(event:MouseEvent):void
+			{
+				if((kanaImage5.source == "kana/katakana/" + romajiFrageLabel.text + ".png") ||
+					(kanaImage5.source == "kana/hiragana/" + romajiFrageLabel.text + ".png")) {
+					antwortRichtig();
+					if(hiraganaCheck1.selected || katakanaCheck1.selected) {
+						ladeRomajiFrage(hiraganaCheck1.selected, katakanaCheck1.selected);
+						ladeKanaAntworten(hiraganaCheck1.selected, katakanaCheck1.selected);	
+						kanaRadio5.selected = false;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else {
+					antwortFalsch();
+				}
+			}
+			
+			protected function romajiAntwortRadio1_clickHandler(event:MouseEvent):void
+			{
+				if((kanaFrageImage.source == "kana/katakana/" + romajiAntwortRadio1.label + ".png") ||
+					(kanaFrageImage.source == "kana/hiragana/" + romajiAntwortRadio1.label + ".png")) {
+					antwortRichtig();
+					if(hiraganaCheck2.selected || katakanaCheck2.selected) {
+						ladeKanaFrage(hiraganaCheck2.selected, katakanaCheck2.selected);
+						ladeRomajiAntworten();	
+						romajiAntwortRadio1.selected = false;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else {
+					antwortFalsch();
+				}
+			}
+			
+			protected function romajiAntwortRadio2_clickHandler(event:MouseEvent):void
+			{
+				if((kanaFrageImage.source == "kana/katakana/" + romajiAntwortRadio2.label + ".png") ||
+					(kanaFrageImage.source == "kana/hiragana/" + romajiAntwortRadio2.label + ".png")) {
+					antwortRichtig();
+					if(hiraganaCheck2.selected || katakanaCheck2.selected) {
+						ladeKanaFrage(hiraganaCheck2.selected, katakanaCheck2.selected);
+						ladeRomajiAntworten();	
+						romajiAntwortRadio2.selected = false;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else {
+					antwortFalsch();
+				}
+			}
+			
+			protected function romajiAntwortRadio3_clickHandler(event:MouseEvent):void
+			{
+				if((kanaFrageImage.source == "kana/katakana/" + romajiAntwortRadio3.label + ".png") ||
+					(kanaFrageImage.source == "kana/hiragana/" + romajiAntwortRadio3.label + ".png")) {
+					antwortRichtig();
+					if(hiraganaCheck2.selected || katakanaCheck2.selected) {
+						ladeKanaFrage(hiraganaCheck2.selected, katakanaCheck2.selected);
+						ladeRomajiAntworten();	
+						romajiAntwortRadio3.selected = false;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else {
+					antwortFalsch();
+				}
+			}
+			
+			protected function romajiAntwortRadio4_clickHandler(event:MouseEvent):void
+			{
+				if((kanaFrageImage.source == "kana/katakana/" + romajiAntwortRadio4.label + ".png") ||
+					(kanaFrageImage.source == "kana/hiragana/" + romajiAntwortRadio4.label + ".png")) {
+					antwortRichtig();
+					if(hiraganaCheck2.selected || katakanaCheck2.selected) {
+						ladeKanaFrage(hiraganaCheck2.selected, katakanaCheck2.selected);
+						ladeRomajiAntworten();	
+						romajiAntwortRadio4.selected = false;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else {
+					antwortFalsch();
+				}
+			}
+			
+			protected function romajiAntwortRadio5_clickHandler(event:MouseEvent):void
+			{
+				if((kanaFrageImage.source == "kana/katakana/" + romajiAntwortRadio5.label + ".png") ||
+					(kanaFrageImage.source == "kana/hiragana/" + romajiAntwortRadio5.label + ".png")) {
+					antwortRichtig();
+					if(hiraganaCheck2.selected || katakanaCheck2.selected) {
+						ladeKanaFrage(hiraganaCheck2.selected, katakanaCheck2.selected);
+						ladeRomajiAntworten();	
+						romajiAntwortRadio5.selected = false;
+					}
+					else Alert.show("Bitte 'Hiragana' und/oder 'Katakana' auswählen!");
+				}
+				else {
+					antwortFalsch();
+				}
+			}
+			
+			protected function InfoButton1_clickHandler(event:MouseEvent):void
+			{
+				Alert.show("FlashRenshuu (c) Christina Czeschik 2012 \n Kana-Icons: www.wikipedia.de","Info");
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+	</fx:Declarations> 
+	
+	<s:TabBar x="10" y="10" dataProvider="{renshuuStack}"/>
+	<mx:ViewStack id="renshuuStack" x="10" y="10" width="1072" height="952">
+		<s:NavigatorContent id="romajikana" label="Romaji => Kana"
+							fontWeight="bold">
+			<s:Panel id="romajiFragePanel" x="2" y="24" width="490" height="171" fontSize="18"
+					 fontWeight="bold" title="Romaji">
+				<s:Button id="romajiAbfrageStartButton" x="246" y="10" width="237" height="87"
+						  label="Start" click="romajiAbfrageStartButton_clickHandler(event)" fontSize="18" fontWeight="bold"/>
+				<s:BorderContainer x="6" y="10" width="232" height="120">
+					<s:Label id="romajiFrageLabel" x="10" y="41" width="210" fontSize="36"
+							 fontWeight="bold" text="a" textAlign="center"/>
+				</s:BorderContainer>
+				<s:CheckBox id="hiraganaCheck1" x="246" y="105" label="Hiragana" selected="true"/>
+				<s:CheckBox id="katakanaCheck1" x="379" y="105" label="Katakana"/>
+				
+			</s:Panel>		
+			<s:Panel id="kanaAntwortPanel" x="0" y="203" width="490" height="122"
+					 fontSize="18" fontWeight="bold" title="Kana">	
+				<s:Image id="kanaImage1" x="10" y="10" width="30" height="30"
+						 source="kana/hiragana/a.png"/>
+				<s:Image id="kanaImage2" x="120" y="10" width="30" height="30"
+						 source="kana/hiragana/i.png"/>
+				<s:Image id="kanaImage3" x="230" y="10" width="30" height="30"
+						 source="kana/hiragana/u.png"/>
+				<s:Image id="kanaImage4" x="340" y="10" width="30" height="30"
+						 source="kana/hiragana/e.png"/>
+				<s:Image id="kanaImage5" x="450" y="10" width="30" height="30"
+						 source="kana/hiragana/o.png"/>
+				<s:RadioButton id="kanaRadio1" y="57" left="19" width="12"
+							   click="kanaRadio1_clickHandler(event)"/>
+				<s:RadioButton id="kanaRadio2" y="57" left="129" width="12"
+							   click="kanaRadio2_clickHandler(event)"/>
+				<s:RadioButton id="kanaRadio3" y="57" left="239" width="12"
+							   click="kanaRadio3_clickHandler(event)"/>
+				<s:RadioButton id="kanaRadio4" y="57" left="349" width="12"
+							   click="kanaRadio4_clickHandler(event)"/>
+				<s:RadioButton id="kanaRadio5" y="57" left="459" width="12"
+							   click="kanaRadio5_clickHandler(event)"/>
+			</s:Panel>
+			<s:Panel x="500" y="24" width="102" height="301">
+				<s:Label id="romajiKanaScoreLabel" y="10" width="80" horizontalCenter="0"
+						 text="{scoreString}" textAlign="center"/>
+				<s:Image id="smileyImage1" x="10" y="184" width="80" height="74"/>
+				<mx:LinkButton id="InfoButton1" x="9" y="-26" width="81" label="Info"
+							   click="InfoButton1_clickHandler(event)" focusColor="#C4C4C4"
+							   fontSize="12" rollOverColor="#FFFFFF" selectionColor="#C4C4C4"
+							   textAlign="center"/>
+			</s:Panel>
+			
+			</s:NavigatorContent>
+		<s:NavigatorContent id="kanaromaji" label="Kana => Romaji">
+			<s:Panel id="kanaFragePanel" x="2" y="24" width="490" height="171" fontSize="18"
+					 fontWeight="bold" title="Kana">
+				<s:Button id="kanaAbfrageStartButton" x="246" y="10" width="237" height="87"
+						  label="Start" click="kanaAbfrageStartButton_clickHandler(event)" fontSize="18" fontWeight="bold"/>
+				<s:BorderContainer x="6" y="10" width="232" height="120">
+					<s:Image id="kanaFrageImage" x="24" y="10" width="183" height="98"
+							 scaleMode="letterbox" smooth="true" smoothingQuality="default"
+							 source="kana/hiragana/a.png"/>
+				</s:BorderContainer>
+			<s:CheckBox id="hiraganaCheck2" x="246" y="105" label="Hiragana" selected="true"/>
+			<s:CheckBox id="katakanaCheck2" x="379" y="105" label="Katakana"/>
+
+				
+			</s:Panel>		
+			<s:Panel id="romajiAntwortPanel" x="0" y="203" width="490" height="122"
+					 fontSize="18" fontWeight="bold" title="Romaji">	
+				<s:RadioButton id="romajiAntwortRadio1" x="10" y="10" label="a"
+							   click="romajiAntwortRadio1_clickHandler(event)"/>
+				<s:RadioButton id="romajiAntwortRadio2" x="110" y="10" label="i"
+							   click="romajiAntwortRadio2_clickHandler(event)"/>
+				<s:RadioButton id="romajiAntwortRadio3" x="210" y="10" label="u"
+							   click="romajiAntwortRadio3_clickHandler(event)"/>
+				<s:RadioButton id="romajiAntwortRadio4" x="310" y="10" label="e"
+							   click="romajiAntwortRadio4_clickHandler(event)"/>
+				<s:RadioButton id="romajiAntwortRadio5" x="410" y="10" label="o"
+							   click="romajiAntwortRadio5_clickHandler(event)"/>
+			</s:Panel>
+			<s:Panel x="500" y="24" width="102" height="301">
+				<s:Label id="kanaRomajiScoreLabel" y="10" width="79" fontWeight="bold"
+						 horizontalCenter="0" text="{scoreString}" textAlign="center"/>
+				<s:Image id="smileyImage2" x="10" y="184" width="80" height="74"/>
+				<mx:LinkButton id="InfoButton2" x="9" y="-26" width="81" label="Info"
+							   click="InfoButton1_clickHandler(event)" focusColor="#C4C4C4"
+							   fontSize="12" fontWeight="bold" rollOverColor="#FFFFFF"
+							   selectionColor="#C4C4C4" textAlign="center"/>
+			</s:Panel>
+
+		</s:NavigatorContent>
+	</mx:ViewStack>
+
+</s:Application>

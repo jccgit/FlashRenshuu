@@ -1,0 +1,15 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+
+global
+{
+	text-align: center;
+	chrome-color: #FBF268;
+	focus-color: #FB7572;
+	selection-color: #FB7572;
+	roll-over-color: #C3FF8E;
+	content-background-color: #030303;
+}
+	
